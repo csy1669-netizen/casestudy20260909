@@ -781,6 +781,93 @@ br.sb{display:inline}
 .sec-head h2 .h2sub{display:block;margin-top:6px;font-family:var(--sans);font-size:14px;font-weight:600;
  letter-spacing:-.02em;color:var(--tx2);line-height:1.6;word-break:keep-all}
 @media (min-width:760px){.sec-head h2 .h2sub{display:inline-block;margin:0 0 0 10px;vertical-align:baseline}}
+
+/* ═══════════════════════════════════════════════════════════
+   모바일 최적화 — 1열 전환 시 정렬용 여백 해제 + 밀도 조정
+   ═══════════════════════════════════════════════════════════ */
+
+/* iOS 가로모드 폰트 자동확대 방지 */
+html{-webkit-text-size-adjust:100%}
+
+/* 표 가로 스크롤 어포던스 — 끝이 잘렸음을 그림자로 알린다 */
+.tw{
+  background:
+    linear-gradient(to right, var(--w) 30%, rgba(255,255,255,0)),
+    linear-gradient(to left, var(--w) 30%, rgba(255,255,255,0)) 100% 0,
+    radial-gradient(farthest-side at 0 50%, rgba(17,17,19,.13), rgba(17,17,19,0)),
+    radial-gradient(farthest-side at 100% 50%, rgba(17,17,19,.13), rgba(17,17,19,0)) 100% 0;
+  background-repeat:no-repeat;
+  background-size:40px 100%, 40px 100%, 15px 100%, 15px 100%;
+  background-attachment:local, local, scroll, scroll;
+}
+
+@media (max-width:700px){
+  /* ── 여백: 좌우 게터를 줄여 본문 폭 확보 ── */
+  .wrap{padding-inline:18px}
+  .tabbar-in{padding-inline:18px}
+  section{padding-block:var(--s6) 0}
+  .masthead{padding-block:32px 18px}
+
+  /* ── 탭바: 스크롤 가능함을 양끝 페이드로 알린다 ── */
+  .tabbar-in{
+    scroll-snap-type:x proximity; scroll-padding-inline:18px;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 16px,#000 calc(100% - 16px),transparent 100%);
+    mask-image:linear-gradient(90deg,transparent 0,#000 16px,#000 calc(100% - 16px),transparent 100%);
+  }
+  .tab{scroll-snap-align:center;padding:9px 14px}
+
+  /* ── 정렬용 최소 높이 해제 (1열에서는 빈 공간만 만든다) ── */
+  .t5 .t5t,.t5 .tags,.gr .gt,.syn .syn-t,.syn .tags,
+  .fxc .fxt,.kt .kc .kn,.proof-h,.opt-h,
+  .case-meta,.angle,.formula .fs{min-height:0}
+
+  /* ── subgrid 행 정렬 해제 (카드가 한 줄에 하나면 맞출 대상이 없다) ── */
+  .syn,.case,.t5{display:flex;flex-direction:column;grid-row:auto}
+
+  /* ── 채널 요약 타일: 아이콘 축소, 세로 여백 정리 ── */
+  .gr{padding:var(--s3) var(--s4) var(--s4);gap:var(--s2)}
+  .gr .gicon{width:42px;height:42px}
+  .gr .gt{font-size:15.5px}
+
+  /* ── 효율 스탯 타일: 2×2 격자 ── */
+  details.more > *:not(summary){padding-inline:14px}
+  .effstats{grid-template-columns:1fr 1fr}
+  .es{padding:var(--s3) var(--s3) var(--s2)}
+  .es .esv{font-size:23px}
+
+  /* ── 히어로 수치: 2열 고정으로 줄바꿈 안정화 ── */
+  .hero{padding:26px 22px}
+  .hero .hnums{display:grid;grid-template-columns:1fr 1fr;gap:20px 16px;width:100%}
+  .hero .hn .hv{font-size:26px}
+
+  /* ── 다크 박스류 좌우 패딩 축소 ── */
+  .bnr{padding:var(--s3) var(--s4) var(--s3) 26px}
+  .ai-report{padding:var(--s4) var(--s4)}
+  .find{padding:var(--s4) var(--s4)}
+  .ask{padding:var(--s4) var(--s4) var(--s4) 24px}
+  .syn-s,.syn-pink,.syn-hd{padding-inline:var(--s3)}
+  .syn-bar{padding-inline:var(--s3)}
+  .ax-l,.ax-r{padding:var(--s3)}
+  .pt2-c{padding:var(--s3)}
+  .pt2-h{padding:var(--s2) var(--s3)}
+
+  /* ── 탭 타겟 확보 ── */
+  .btn{padding:10px 17px}
+  details.more summary{padding:16px 18px}
+
+  /* ── 표: 첫 열이 눌리지 않도록 ── */
+  table{min-width:560px}
+  th,td{padding:10px 13px}
+}
+
+/* ── 아주 좁은 화면 ── */
+@media (max-width:400px){
+  .wrap{padding-inline:16px}
+  .tabbar-in{padding-inline:16px}
+  .hero .hn .hv{font-size:23px}
+  .find .fv2{font-size:29px}
+  .ev-v{font-size:21px}
+}
 </style>
 
 </head>
@@ -2643,6 +2730,8 @@ br.sb{display:inline}
       }
     });
     if(store){ try{localStorage.setItem('anwon-tab',id);}catch(e){} }
+    var act=document.getElementById('tab-'+id);
+    if(act&&act.scrollIntoView){ try{act.scrollIntoView({inline:'center',block:'nearest'});}catch(e){} }
   }
   tabs.forEach(function(t){
     t.addEventListener('click',function(){
